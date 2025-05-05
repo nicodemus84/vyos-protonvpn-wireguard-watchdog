@@ -247,6 +247,14 @@ declare -A VPN_CONFIGS=(
 sudo /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save
 ```
 
+### *** I noticed that running the script manually with --next was working without issue, but via cron, it would spit out validation errors for the vyatta-cfg-cmd-wrapper commands.  I tested adding a line at the beginning of the script to output 'env' and verified that the shell loaded via cron was very minimal and missing key components compared to when run manually.  To fix this, we can make sure cron loads the same environment as your vyos user shell as shown below:
+
+You can add the script to the vyos user crontab with 'crontab -e' and place the following line at the bottom.  This will run the script every minute:
+
+```
+* * * * * SHELL=/bin/bash /bin/bash -i -c '. /home/vyos/.bashrc && /bin/bash /config/scripts/wg-watchdog.sh >> /var/log/wg-watchdog.log 2>&1'
+```
+
 You can view the log with:
 
 ```
